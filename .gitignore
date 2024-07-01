@@ -1,0 +1,33 @@
+# Credenciales de conexion 
+JDBC.java
+
+
+# Directorios de construcción
+target/
+build/
+out/
+
+# Archivos de configuración del entorno de desarrollo
+*.iml
+.idea/
+*.ipr
+*.iws
+.vscode/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración sensibles
+*.properties
+*.yml
+
+# Archivos binarios
+*.class
+*.jar
+*.war
+*.ear
+
+# Archivos de logs
+*.log
+!/src/main/java/datos/Conexion.java

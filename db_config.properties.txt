@@ -1,0 +1,3 @@
+jdbc.url=jdbc:mysql://localhost:3306/control_clientes?useSSL=false&useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+jdbc.user=root
+jdbc.password=usuario

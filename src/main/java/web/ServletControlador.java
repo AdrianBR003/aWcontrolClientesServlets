@@ -15,7 +15,7 @@ public class ServletControlador extends HttpServlet {
     private void accionDefault(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         List<Cliente> clientes = new ClienteDaoJDBC().listar();
-        System.out.println("clientes = " + clientes);
+        //System.out.println("clientes = " + clientes);
         req.setAttribute("clientes", clientes); // Aqui decimos que vamos a compartir esta variable
         req.setAttribute("totalClientes", clientes.size());
         req.setAttribute("saldoTotal", this.calcularSaldoTotal(clientes));
@@ -27,15 +27,13 @@ public class ServletControlador extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        this.accionDefault(req, res);
-
         String accion = req.getParameter("accion");
-
+        
         // Vamos a revisar si hay informacion en accion
         if (accion != null) {
             switch (accion) {
                 case "editar":
-                    //this.editarCliente(req, res);
+                    this.editarCliente(req, res);
                     break;
                 default:
                     this.accionDefault(req, res);
@@ -115,16 +113,18 @@ public class ServletControlador extends HttpServlet {
         this.accionDefault(req, res);
     }
 
-    /*
     private void editarCliente(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         // Recuperamos el idCliente
-        int idCliente = Integer.parseInt(req.getParameter("idCliente"));
+        System.out.println("\n Hemos entrado a EDITAR CLIENTE .java \n");
+        String idClienteP = req.getParameter("idCliente"); 
+        int idCliente = Integer.parseInt(idClienteP);
+        
         Cliente cliente = new ClienteDaoJDBC().encontrar(new Cliente(idCliente)); 
+        System.out.println("cliente = " + cliente);
         req.setAttribute("cliente", cliente);
         String jspEditar = "/WEB-INF/paginas/cliente/editarCliente.jsp"; 
         req.getRequestDispatcher(jspEditar).forward(req, res);
     }
-    */
 
 }

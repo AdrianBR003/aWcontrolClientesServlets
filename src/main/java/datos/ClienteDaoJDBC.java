@@ -1,8 +1,6 @@
 package datos;
 
-
 // Commit de Prueba
-
 import com.mysql.cj.xdevapi.PreparableStatement;
 import java.util.*;
 import dominio.Cliente;
@@ -17,7 +15,7 @@ public class ClienteDaoJDBC {
     private static final String SQL_SELECT = "SELECT id_cliente, nombre, apellido, email, telefono, saldo FROM cliente";
     private static final String SQL_SELECT_BY_ID = "SELECT id_cliente, nombre, apellido, email, telefono, saldo FROM cliente WHERE id_cliente = ?";
     private static final String SQL_INSERT = "INSERT INTO cliente(nombre, apellido, email, telefono, saldo) VALUES(?, ?, ?, ?, ?)"; // Cada ? por parametro 
-            
+
     private static final String SQL_UPDATE = "UPDATE cliente "
             + " SET nombre=?, apellido=?, email=?, telefono=?, saldo=? WHERE id_cliente=?";
     private static final String SQL_DELETE = "DELETE FROM cliente WHERE id_cliente=?";
@@ -41,9 +39,9 @@ public class ClienteDaoJDBC {
                 String email = rs.getString("email");
                 String telefono = rs.getString("telefono");
                 double saldo = rs.getDouble("saldo");
-                
+
                 cliente = new Cliente(idCliente, nombre, apellido, email, telefono, saldo);
-                System.out.println("cliente = " + cliente);
+                //System.out.println("cliente = " + cliente);
                 clientes.add(cliente);
 
             }
@@ -61,24 +59,35 @@ public class ClienteDaoJDBC {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+
+        System.out.println("\n Buscando al Cliente con id " + cliente.getIdCliente() + "\n");
+
         try {
             conn = Conexion.getConnection();
-            stmt = conn.prepareStatement(SQL_SELECT_BY_ID);
+            stmt = conn.prepareStatement(SQL_SELECT_BY_ID, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             stmt.setInt(1, cliente.getIdCliente()); // modificamos el valor 
             rs = stmt.executeQuery();
-            rs.absolute(1); // En caso de que exista el registro '1', nos reposiciona ahi | registro(1) = id
 
-            String nombre = rs.getString("nombre");
-            String apellido = rs.getString("apellido");
-            String email = rs.getString("email");
-            String telefono = rs.getString("telefono");
-            double saldo = rs.getDouble("saldo");
+            if (rs.next()) { // Utilizamos rs.next() en lugar de rs.absolute(1)
+                System.out.println("rs" + rs);
 
-            cliente.setNombre(nombre);
-            cliente.setApellido(apellido);
-            cliente.setEmail(email);
-            cliente.setTelefono(telefono);
-            cliente.setSaldo(saldo);
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String email = rs.getString("email");
+                String telefono = rs.getString("telefono");
+                double saldo = rs.getDouble("saldo");
+
+                cliente.setNombre(nombre);
+                cliente.setApellido(apellido);
+                cliente.setEmail(email);
+                cliente.setTelefono(telefono);
+                cliente.setSaldo(saldo);
+
+                System.out.println("Cliente ENCONTRADO en BASE DE DATOS = " + cliente);
+            } else {
+                System.out.println("Cliente NO ENCONTRADO en BASE DE DATO");
+
+            }
 
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
@@ -128,7 +137,6 @@ public class ClienteDaoJDBC {
             stmt.setDouble(5, cliente.getSaldo());
             stmt.setInt(6, cliente.getIdCliente());
 
-            
             rows = stmt.executeUpdate(); // Nos va a regresar un entero indicando el numero de registros modificados
 
         } catch (SQLException ex) {
@@ -140,26 +148,24 @@ public class ClienteDaoJDBC {
         return rows;
     }
 
-    public int eliminar(Cliente cliente){
+    public int eliminar(Cliente cliente) {
         Connection conn = null;
         PreparedStatement stmt = null;
-        int rows = 0; 
+        int rows = 0;
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_DELETE);
             stmt.setInt(1, cliente.getIdCliente());
 
-
             rows = stmt.executeUpdate(); // Nos va a regresar un entero indicando el numero de registros modificados
-            
-            
+
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
         } finally { // Para cerrar todos los objetos que se estan ejecutando 
             Conexion.close(stmt);
             Conexion.close(conn);
         }
-        return rows; 
+        return rows;
     }
-    
+
 }

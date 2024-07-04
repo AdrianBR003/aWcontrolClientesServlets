@@ -56,8 +56,11 @@ public class ServletControlador extends HttpServlet {
                 case "insertar":
                     this.insertarCliente(req, res);
                     res.sendRedirect("index.jsp");
-
                     break;
+                case "modificar": 
+                    this.modificarCliente(req,res);
+                    res.sendRedirect("index.jsp");
+                    break; 
                 default:
                     this.accionDefault(req, res);
             }
@@ -127,4 +130,46 @@ public class ServletControlador extends HttpServlet {
         req.getRequestDispatcher(jspEditar).forward(req, res);
     }
 
+    private void modificarCliente(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        // Recuperamos los valores del formulario editarCliente
+        
+        int idCliente = Integer.parseInt(req.getParameter("idCliente")); 
+        
+        String nombre = req.getParameter("nombre");
+        String apellido = req.getParameter("apellido");
+        String email = req.getParameter("email");
+        String telefono = req.getParameter("telefono");
+        double saldo = 0;
+        String saldoString = req.getParameter("saldo");
+
+        // Imprimir valores recibidos para depuración
+        System.out.println("Cliente modificado");
+
+        System.out.println("idCliente = " + idCliente);
+        System.out.println("Nombre: " + nombre);
+        System.out.println("Apellido: " + apellido);
+        System.out.println("Email: " + email);
+        System.out.println("Telefono: " + telefono);
+        System.out.println("Saldo String: " + saldoString);
+
+        if (saldoString != null && !saldoString.isEmpty()) {
+            try {
+                saldo = Double.parseDouble(saldoString);
+            } catch (NumberFormatException e) {
+                e.printStackTrace(System.out);
+                // Manejar el error de conversión según sea necesario
+            }
+        }
+
+        // Creamos el objeto de cliente (modelo)
+        Cliente cliente = new Cliente(idCliente, nombre, apellido, email, telefono, saldo);
+
+        // Modificamos el nuevo objeto en la base de datos 
+        int registrosModificados = new ClienteDaoJDBC().actualizar(cliente);
+        System.out.println("registrosModificados = " + registrosModificados);
+        this.accionDefault(req, res);
+    }
+    
+    
 }

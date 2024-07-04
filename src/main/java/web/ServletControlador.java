@@ -35,6 +35,11 @@ public class ServletControlador extends HttpServlet {
                 case "editar":
                     this.editarCliente(req, res);
                     break;
+                case "eliminar":
+                    System.out.println("idCliente ServletControlador" + req.getParameter("idCliente"));
+                    this.eliminarCliente(req, res); 
+                    res.sendRedirect("index.jsp");
+                    break; 
                 default:
                     this.accionDefault(req, res);
             }
@@ -171,5 +176,26 @@ public class ServletControlador extends HttpServlet {
         this.accionDefault(req, res);
     }
     
+    private void eliminarCliente(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        System.out.println("\n Hemos entrado a ELIMINAR CLIENTE .java \n");
+
+        int idCliente = Integer.parseInt(req.getParameter("idCliente"));
+        
+        // Recuperamos los valores del formulario editarCliente
+        String idClienteP = req.getParameter("idCliente"); 
+        System.out.println("idCliente = " + idClienteP);
+        // Imprimir valores recibidos para depuración
+        System.out.println("Cliente modificado");
+        System.out.println("idCliente = " + idCliente);
+
+        // Creamos el objeto de cliente (modelo)
+        Cliente cliente = new Cliente(idCliente);
+
+        // Modificamos el nuevo objeto en la base de datos 
+        int registrosModificados = new ClienteDaoJDBC().eliminar(cliente);
+        System.out.println("registrosModificados = " + registrosModificados);
+        this.accionDefault(req, res);
+    }
     
 }
